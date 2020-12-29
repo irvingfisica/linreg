@@ -28,23 +28,42 @@ fn run() -> Result<(), Box<dyn Error>> {
 
     let matriz = DMatrix::from_vec_generic(fils,cols,coldatos);
 
-    println!("{}",matriz);
-
-    let x = matriz.columns(0, 13).into_owned();
-    let y = matriz.column(13).into_owned();
+    let mat_a = matriz.columns(0, 13).into_owned();
+    let mat_y = matriz.column(13).into_owned();
 
     //Regresión con la inversa de la matriz
-    let a = x.clone().insert_column(13, 1.0).into_owned();
-    let b = y.clone();
+    let a = mat_a.clone().insert_column(13, 1.0).into_owned();
+    let b = mat_y.clone();
     let x = (a.transpose() * &a).try_inverse().unwrap() * &a.transpose() *&b;
     let coeff = x.rows(0, 13);
     let intercept = x[(13, 0)];
     println!("coeff: {}, intercept: {}", coeff, intercept);
 
     //Regresión con descomposición QR
+    let a = mat_a.clone().insert_column(13, 1.0).into_owned();
+    let b = mat_y.clone();
     let qr = a.qr();
-    let (q, r) = (qr.q().transpose(), qr.r());        
+    let (q, r) = (qr.q().transpose(), qr.r());  
     let x = r.try_inverse().unwrap() * &q * &b;
+    let coeff = x.rows(0, 13);
+    let intercept = x[(13, 0)];
+    println!("coeff: {}, intercept: {}", coeff, intercept);
+
+    //Regresión con descomposicion SVD
+    let a = mat_a.clone().insert_column(13, 1.0).into_owned();
+    let b = mat_y.clone();
+    let svd = a.svd(true, true);
+    let ps_inv = svd.pseudo_inverse(0.001).unwrap();
+    let x = ps_inv * &b;
+    let coeff = x.rows(0, 13);
+    let intercept = x[(13, 0)];
+    println!("coeff: {}, intercept: {}", coeff, intercept);
+
+    //Regresión con descomposicion SVD resolviendo con nalgebra
+    let a = mat_a.clone().insert_column(13, 1.0).into_owned();
+    let b = mat_y.clone();
+    let svd = a.svd(true, true);
+    let x = svd.solve(&b,0.001).unwrap();
     let coeff = x.rows(0, 13);
     let intercept = x[(13, 0)];
     println!("coeff: {}, intercept: {}", coeff, intercept);
