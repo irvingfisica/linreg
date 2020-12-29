@@ -11,3 +11,7 @@ Hasta ahora se está realizando la regresión lineal resolviendo el sistema de e
 - Usando la descomposición SVD
 
 En las regresiones lineales no se está utilizando ninguna librería o crate de machine learning y tampoco se está utilizando bindings a LAPACK.
+
+Algunas referencias para la implementación de las regresiones son las siguientes:
+- [Machine Learning in Rust, Linear Regression](https://vlad-orlov.com/regressor-in-rust/)
+- [SVD for linear Regression](https://sthalles.github.io/svd-for-regression/)
